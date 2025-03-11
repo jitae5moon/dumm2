@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: article-service
+  datasource:
+    url: jdbc:mysql://localhost:3306
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin5!}
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE
