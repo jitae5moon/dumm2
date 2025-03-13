@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Entity
-public class Article {
+public class Article extends AuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
