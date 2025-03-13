@@ -26,6 +26,6 @@ public abstract class AuditingEntity {
     private String modifiedBy;
 
     @LastModifiedDate
-    private String modifiedDate;
+    private LocalDateTime modifiedDate;
 
 }
