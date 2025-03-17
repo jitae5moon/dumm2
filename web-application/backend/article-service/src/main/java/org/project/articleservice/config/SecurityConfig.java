@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 .requestMatchers("/login/**", "/error").permitAll()
                                 .requestMatchers("/articles").authenticated()
                 )
-                .addFilterAfter(new JwtValidationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtValidationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
