@@ -9,7 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.project.articleservice.security.jwt.JwtProvider;
+import org.project.articleservice.security.jwt.JwtGenerationService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -23,14 +23,14 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class JwtValidationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtGenerationService jwtGenerationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = getJwtFromCookie(request);
 
         if (jwt != null) {
-            SecretKey secretKey = Keys.hmacShaKeyFor(jwtProvider.getJwtSecret().getBytes(StandardCharsets.UTF_8));
+            SecretKey secretKey = Keys.hmacShaKeyFor(jwtGenerationService.getJwtSecret().getBytes(StandardCharsets.UTF_8));
 
             Claims claims = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(jwt).getPayload();
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Getter
-@Component
-public class JwtProvider {
+@Service
+public class JwtGenerationService {
 
     // TODO: Save in environment variable
     @Value("${jwt.secret}")
