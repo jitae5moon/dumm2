@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Articles</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <script src="/js/bootstrap.bundle.js" defer></script>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">My Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/articles}">Articles</a>
+        </li>
+      </ul>
+      <form th:action="@{/logout}" method="post" class="d-flex">
+        <button type="submit" class="btn btn-outline-danger">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-4">
+  <h2 class="mb-3">Articles</h2>
+
+  <!-- Search Bar -->
+  <form th:action="@{/articles}" method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control" placeholder="Search articles..." th:value="${search}">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <div class="mb-3 d-flex justify-content-between">
+    <h2>Articles</h2>
+    <a th:href="@{/articles/save}" class="btn btn-success">Write New Article</a>
+  </div>
+
+  <!-- Articles Table -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Published Date</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="article, iterStat : ${articles}">
+      <td th:text="${iterStat.count}"></td>
+      <td>
+        <a th:href="@{/articles/{id}(id=${article.id})}" th:text="${article.title}"></a>
+      </td>
+      <td th:text="${article.createdBy}"></td>
+      <td th:text="${#temporals.format(article.createdDate, 'yyyy-MM-dd')}"></td>
+      <td>
+        <a th:href="@{/articles/{id}(id=${article.id})}" class="btn btn-sm btn-warning">Edit</a>
+      </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(articles)}">
+      <td colspan="5" class="text-center">No articles found</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
