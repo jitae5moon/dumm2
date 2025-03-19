@@ -1,9 +1,6 @@
 package org.project.articleservice.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +13,13 @@ public class Article extends AuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter private String title;
-    @Setter private String content;
+    @Setter
+    @Column(length = 500)
+    private String title;
+
+    @Setter
+    @Column(length = 5000)
+    private String content;
 
     protected Article() {}
 
