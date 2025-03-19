@@ -2,7 +2,7 @@ package org.project.articleservice.dto;
 
 import org.project.articleservice.domain.Article;
 
-public record ArticleUpdateDto(String title, String content) {
+public record ArticleSaveRequestDto(String title, String content) {
 
     public Article toEntity() {
         return Article.builder()

@@ -4,8 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.project.articleservice.domain.Article;
 import org.project.articleservice.dto.ArticleResponseDto;
-import org.project.articleservice.dto.ArticleSaveDto;
-import org.project.articleservice.dto.ArticleUpdateDto;
+import org.project.articleservice.dto.ArticleSaveRequestDto;
+import org.project.articleservice.dto.ArticleUpdateRequestDto;
 import org.project.articleservice.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +35,14 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleResponseDto saveArticle(ArticleSaveDto dto) {
+    public ArticleResponseDto saveArticle(ArticleSaveRequestDto dto) {
         Article savedArticle = articleRepository.save(dto.toEntity());
 
         return ArticleResponseDto.from(savedArticle);
     }
 
     @Override
-    public ArticleResponseDto updateArticle(Long id, ArticleUpdateDto dto) {
+    public ArticleResponseDto updateArticle(Long id, ArticleUpdateRequestDto dto) {
         Article savedArticle = articleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Article not found, id = " + id));
 
         if (dto.title() != null) savedArticle.setTitle(dto.title());
