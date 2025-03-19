@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.project.articleservice.domain.Article;
 import org.project.articleservice.dto.ArticleResponseDto;
 import org.project.articleservice.dto.ArticleSaveRequestDto;
+import org.project.articleservice.dto.ArticleSearchRequestDto;
 import org.project.articleservice.dto.ArticleUpdateRequestDto;
 import org.project.articleservice.repository.ArticleRepository;
+import org.project.articleservice.repository.specification.ArticleSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +24,24 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
 
     @Override
-    public List<ArticleResponseDto> getArticles() {
-        List<Article> articles = articleRepository.findAll();
+    public List<ArticleResponseDto> getArticles(ArticleSearchRequestDto dto) {
+        Specification<Article> specification = Specification.where(null);
+
+        if (dto.searchType() != null) {
+            switch (dto.searchType()) {
+                case "title":
+                    specification = specification.and(ArticleSpecification.likeTitle(dto.searchWord().trim()));
+                    break;
+                case "content":
+                    specification = specification.and(ArticleSpecification.likeContent(dto.searchWord().trim()));
+                    break;
+                case "createdBy":
+                    specification = specification.and(ArticleSpecification.likeCreatedBy(dto.searchWord().trim()));
+                    break;
+            }
+        }
+
+        List<Article> articles = articleRepository.findAll(specification);
 
         return articles.stream()
                 .map(article -> ArticleResponseDto.from(article))
