@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.project.articleservice.security.jwt.JwtGenerationService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtValidationFilter extends OncePerRequestFilter {
 
@@ -32,13 +34,18 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         if (jwt != null) {
             SecretKey secretKey = Keys.hmacShaKeyFor(jwtGenerationService.getJwtSecret().getBytes(StandardCharsets.UTF_8));
 
-            Claims claims = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(jwt).getPayload();
+            try {
+                Claims claims = Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(jwt).getPayload();
 
-            String username = claims.get("username", String.class);
-            String authorities = claims.get("authorities", String.class);
+                String username = claims.get("username", String.class);
+                String authorities = claims.get("authorities", String.class);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                log.error("JwtValidationFilter :: doFilterInternal :: error = " + e.getMessage());
+            }
         }
 
         filterChain.doFilter(request, response);
