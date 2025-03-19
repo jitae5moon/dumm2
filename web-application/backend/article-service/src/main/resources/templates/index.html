@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to Dumm2</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <script src="/js/bootstrap.bundle.js" defer></script>
+  <style>
+      .dumm2 {
+          background: url('https://source.unsplash.com/1600x900/?nature,writing') no-repeat center center/cover;
+          height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          color: white;
+          text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+      }
+      .dumm2 h1 {
+          font-size: 3rem;
+          font-weight: bold;
+      }
+      .dumm2 p {
+          font-size: 1.3rem;
+          margin-top: 10px;
+      }
+      .dumm2 .btn {
+          font-size: 1.2rem;
+          padding: 10px 20px;
+      }
+      footer {
+          background: #343a40;
+          color: white;
+          text-align: center;
+          padding: 10px 0;
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+      }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">Dumm2</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/articles}">Articles</a>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <a th:href="@{/login}" class="btn btn-outline-light me-2" th:if="${#authorization.expression('isAnonymous()')}">Login</a>
+        <form th:action="@{/logout}" method="post" th:if="${#authorization.expression('isAuthenticated()')}">
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="dumm2">
+  <div class="container text-center">
+    <h1>Welcome to Dumm2</h1>
+    <p>Read the latest articles, share your thoughts, and explore great content.</p>
+    <a th:href="@{/articles}" class="btn btn-primary">Explore Articles</a>
+  </div>
+</header>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2025 Dumm2. All rights reserved.</p>
+</footer>
+</body>
+</html>

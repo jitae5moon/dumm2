@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
-                                .requestMatchers("/login/**", "/error").permitAll()
+                                .requestMatchers("/", "/login/**", "/error").permitAll()
                                 .requestMatchers("/articles/**").authenticated()
                 )
                 .addFilterBefore(new JwtValidationFilter(jwtGenerationService), UsernamePasswordAuthenticationFilter.class);
