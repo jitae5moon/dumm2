@@ -1,0 +1,49 @@
+package org.project.articleservice.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.project.articleservice.domain.Article;
+import org.project.articleservice.domain.Attachment;
+import org.project.articleservice.repository.AttachmentRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@Slf4j
+@RequiredArgsConstructor
+@Transactional
+@Service
+public class AttachmentServiceImpl implements AttachmentService {
+
+    private final AttachmentRepository attachmentRepository;
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
+
+    @Override
+    public void upload(MultipartFile file, Article article) {
+        Path path =Paths.get(uploadPath, file.getOriginalFilename());
+
+        try {
+            file.transferTo(path);
+            Attachment attachment = Attachment.builder()
+                    .name(file.getOriginalFilename())
+                    .path(path.toString())
+                    .size(file.getSize())
+                    .article(article)
+                    .build();
+
+            article.addAttachment(attachment);
+            attachmentRepository.save(attachment);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+}
