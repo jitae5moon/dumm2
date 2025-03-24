@@ -1,11 +1,19 @@
 package org.project.articleservice.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.project.articleservice.domain.Article;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record ArticleSaveRequestDto(String title, String content, List<MultipartFile> files) {
+@Setter
+@Getter
+public class ArticleSaveRequestDto {
+
+    private String title;
+    private String content;
+    private List<MultipartFile> attachments;
 
     public Article toEntity() {
         return Article.builder()

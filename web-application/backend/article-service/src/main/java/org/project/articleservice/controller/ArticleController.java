@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,6 +57,7 @@ public class ArticleController {
     @PostMapping
     public String saveArticle(ArticleSaveRequestDto dto, Model model) {
         log.info("ArticleController :: saveArticle :: dto = {}", dto);
+        dto.setAttachments(dto.getAttachments().stream().filter(attachment -> !attachment.isEmpty()).collect(Collectors.toList()));
         articleService.saveArticle(dto);
 
         return "redirect:/articles";
