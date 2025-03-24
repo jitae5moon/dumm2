@@ -28,6 +28,10 @@ public class Article extends AuditingEntity {
     @OneToMany(mappedBy = "article")
     private List<Attachment> attachments = new ArrayList<>();
 
+    @Setter
+    @OneToMany(mappedBy = "article")
+    private List<Comment> comments = new ArrayList<>();
+
     public void addAttachment(Attachment attachment) {
         this.attachments.add(attachment);
     }
@@ -35,11 +39,12 @@ public class Article extends AuditingEntity {
     protected Article() {}
 
     @Builder
-    public Article(Long id, String title, String content, List<Attachment> attachments) {
+    public Article(Long id, String title, String content, List<Attachment> attachments, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.attachments = attachments;
+        this.comments = comments;
     }
 
 }
