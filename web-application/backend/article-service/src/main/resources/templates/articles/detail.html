@@ -55,5 +55,27 @@
   </div>
 </div>
 
+<div class="mb-3">
+  <h3>Comments</h3>
+
+  <!-- Comment List -->
+  <div th:each="comment : ${article.comments}" class="border p-3 mb-2 rounded">
+    <strong th:text="${comment.createdBy}"></strong>
+    <p th:text="${comment.content}"></p>
+  </div>
+
+  <!-- Add Comment Form -->
+  <form th:action="@{/comments}" method="post" class="mt-3">
+    <input type="hidden" name="articleId" th:value="${article.id}">
+
+    <div class="mb-2">
+      <label for="content">Comment</label>
+      <textarea id="content" name="content" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Comment</button>
+  </form>
+</div>
+
 </body>
 </html>

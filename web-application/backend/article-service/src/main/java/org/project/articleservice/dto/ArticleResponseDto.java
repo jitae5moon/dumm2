@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record ArticleResponseDto(Long id, String title, String content, String createdBy, LocalDateTime createdDate, String modifiedBy, LocalDateTime modifiedDate, List<AttachmentResponseDto> attachments) {
+public record ArticleResponseDto(Long id, String title, String content, String createdBy, LocalDateTime createdDate, String modifiedBy, LocalDateTime modifiedDate, List<AttachmentResponseDto> attachments, List<CommentResponseDto> comments) {
 
     public static ArticleResponseDto from(Article article) {
         return new ArticleResponseDto(
@@ -17,7 +17,8 @@ public record ArticleResponseDto(Long id, String title, String content, String c
                 article.getCreatedDate(),
                 article.getModifiedBy(),
                 article.getModifiedDate(),
-                article.getAttachments().stream().map(AttachmentResponseDto::from).collect(Collectors.toList())
+                article.getAttachments() != null ? article.getAttachments().stream().map(AttachmentResponseDto::from).collect(Collectors.toList()) : null,
+                article.getComments() != null ? article.getComments().stream().map(CommentResponseDto::from).collect(Collectors.toList()) : null
         );
     }
 
