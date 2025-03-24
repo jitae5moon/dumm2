@@ -3,49 +3,48 @@ package org.project.articleservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.project.articleservice.domain.Article;
-import org.project.articleservice.dto.ArticleResponseDto;
-import org.project.articleservice.dto.ArticleSaveRequestDto;
-import org.project.articleservice.dto.ArticleSearchRequestDto;
-import org.project.articleservice.dto.ArticleUpdateRequestDto;
+import org.project.articleservice.dto.*;
 import org.project.articleservice.repository.ArticleRepository;
 import org.project.articleservice.repository.specification.ArticleSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
+    private final AttachmentService attachmentService;
     private final ArticleRepository articleRepository;
 
     @Override
-    public List<ArticleResponseDto> getArticles(ArticleSearchRequestDto dto) {
+    public Page<ArticleResponseDto> getArticles(ArticleSearchRequestDto searchRequestDto) {
+        Pageable pageable = PageRequest.of(searchRequestDto.currentPage() - 1, searchRequestDto.pageSize(), Sort.by("createdDate").descending());
+
         Specification<Article> specification = Specification.where(null);
 
-        if (dto.searchType() != null) {
-            switch (dto.searchType()) {
+        if (searchRequestDto.searchType() != null) {
+            switch (searchRequestDto.searchType()) {
                 case "title":
-                    specification = specification.and(ArticleSpecification.likeTitle(dto.searchWord().trim()));
+                    specification = specification.and(ArticleSpecification.likeTitle(searchRequestDto.searchWord().trim()));
                     break;
                 case "content":
-                    specification = specification.and(ArticleSpecification.likeContent(dto.searchWord().trim()));
+                    specification = specification.and(ArticleSpecification.likeContent(searchRequestDto.searchWord().trim()));
                     break;
                 case "createdBy":
-                    specification = specification.and(ArticleSpecification.likeCreatedBy(dto.searchWord().trim()));
+                    specification = specification.and(ArticleSpecification.likeCreatedBy(searchRequestDto.searchWord().trim()));
                     break;
             }
         }
 
-        List<Article> articles = articleRepository.findAll(specification);
+        Page<Article> articles = articleRepository.findAll(specification, pageable);
 
-        return articles.stream()
-                .map(article -> ArticleResponseDto.from(article))
-                .collect(Collectors.toList());
+        return articles.map(article -> ArticleResponseDto.from(article));
     }
 
     @Override
@@ -56,6 +55,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleResponseDto saveArticle(ArticleSaveRequestDto dto) {
         Article savedArticle = articleRepository.save(dto.toEntity());
+
+        if (dto.files() != null) {
+            dto.files().forEach(file -> {
+                attachmentService.upload(file, savedArticle);
+            });
+        }
 
         return ArticleResponseDto.from(savedArticle);
     }
