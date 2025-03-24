@@ -81,6 +81,21 @@
     </tr>
     </tbody>
   </table>
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${searchRequestDto.currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/articles(currentPage=${searchRequestDto.currentPage - 1})}">Previous</a>
+      </li>
+      <li class="page-item" th:each="i : ${paginationBarNumbers}"
+          th:classappend="${i == searchRequestDto.currentPage} ? 'active'">
+        <a class="page-link" th:href="@{/articles(currentPage=${i})}" th:text="${i}"></a>
+      </li>
+      <li class="page-item" th:classappend="${searchRequestDto.currentPage + 1 > totalPages} ? 'disabled'">
+        <a class="page-link" th:href="@{/articles(page=${searchRequestDto.currentPage + 1})}">Next</a>
+      </li>
+    </ul>
+  </nav>
 </div>
 
 </body>
