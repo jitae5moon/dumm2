@@ -34,7 +34,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
                                 .requestMatchers("/", "/login/**", "/error").permitAll()
-                                .requestMatchers("/articles/**").authenticated()
+                                .requestMatchers("/articles/**", "/attachments/**").authenticated()
                 )
                 .addFilterBefore(new JwtValidationFilter(jwtGenerationService), UsernamePasswordAuthenticationFilter.class);
 
