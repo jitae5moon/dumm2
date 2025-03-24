@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public void upload(MultipartFile file, Article article) {
-        Path path =Paths.get(uploadPath, file.getOriginalFilename());
+        Path path = Paths.get(uploadPath, file.getOriginalFilename());
 
         try {
             file.transferTo(path);
@@ -38,6 +39,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                     .article(article)
                     .build();
 
+            if (article.getAttachments() == null) article.setAttachments(new ArrayList<>());
             article.addAttachment(attachment);
             attachmentRepository.save(attachment);
         } catch (IOException e) {

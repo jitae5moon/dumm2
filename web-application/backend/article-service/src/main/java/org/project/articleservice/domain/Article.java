@@ -24,6 +24,7 @@ public class Article extends AuditingEntity {
     @Column(length = 5000)
     private String content;
 
+    @Setter
     @OneToMany(mappedBy = "article")
     private List<Attachment> attachments = new ArrayList<>();
 
