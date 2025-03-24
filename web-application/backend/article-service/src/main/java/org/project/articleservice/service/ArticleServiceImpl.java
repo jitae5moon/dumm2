@@ -56,9 +56,9 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleResponseDto saveArticle(ArticleSaveRequestDto dto) {
         Article savedArticle = articleRepository.save(dto.toEntity());
 
-        if (dto.files() != null) {
-            dto.files().forEach(file -> {
-                attachmentService.upload(file, savedArticle);
+        if (dto.getAttachments() != null) {
+            dto.getAttachments().forEach(attachment -> {
+                attachmentService.upload(attachment, savedArticle);
             });
         }
 
