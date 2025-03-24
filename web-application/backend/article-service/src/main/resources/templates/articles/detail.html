@@ -40,6 +40,13 @@
       <hr>
       <p class="card-text" th:text="${article.content}">Article content goes here...</p>
 
+      <h4>Attached Files</h4>
+      <ul>
+        <li th:each="attachment : ${article.attachments}">
+          <a th:href="@{/attachments/{id}(id=${attachment.id})}" th:text="${attachment.name}"></a>
+        </li>
+      </ul>
+
       <!-- Buttons -->
       <div class="mt-4">
         <a th:href="@{/articles}" class="btn btn-secondary">Back to List</a>
