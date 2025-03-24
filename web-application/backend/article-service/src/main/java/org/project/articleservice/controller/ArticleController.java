@@ -2,11 +2,10 @@ package org.project.articleservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.articleservice.dto.ArticleResponseDto;
-import org.project.articleservice.dto.ArticleSaveRequestDto;
-import org.project.articleservice.dto.ArticleSearchRequestDto;
-import org.project.articleservice.dto.ArticleUpdateRequestDto;
+import org.project.articleservice.dto.*;
 import org.project.articleservice.service.ArticleService;
+import org.project.articleservice.service.PaginationService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +19,7 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final PaginationService paginationService;
 
     @GetMapping("/save")
     public String getViewForSaveArticle(Model model) {
@@ -30,12 +30,15 @@ public class ArticleController {
 
     // TODO: Add validation
     @GetMapping
-    public String getArticles(ArticleSearchRequestDto dto, Model model) {
-        log.info("ArticleController :: getArticles");
-        List<ArticleResponseDto> articles = articleService.getArticles(dto);
+    public String getArticles(ArticleSearchRequestDto searchRequestDto, Model model) {
+        log.info("ArticleController :: getArticles ");
+        Page<ArticleResponseDto> articles = articleService.getArticles(searchRequestDto);
+        List<Integer> paginationBarNumbers = paginationService.getPaginationBarNumbers(searchRequestDto.currentPage(), articles.getTotalPages());
 
-        model.addAttribute("articles", articles);
-        model.addAttribute("searchRequestDto", dto);
+        model.addAttribute("articles", articles.getContent());
+        model.addAttribute("searchRequestDto", searchRequestDto);
+        model.addAttribute("totalPages", articles.getTotalPages());
+        model.addAttribute("paginationBarNumbers", paginationBarNumbers);
 
         return "articles/list";
     }
