@@ -36,10 +36,11 @@
   <div class="card shadow-lg">
     <div class="card-body">
       <form th:action="@{/articles}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:if="${parentId}" th:name="parentId" th:value="${parentId}" />
         <!-- Title -->
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
-          <input type="text" id="title" name="title" class="form-control" required>
+          <input type="text" id="title" name="title" th:value="${title}" class="form-control" required>
         </div>
 
         <!-- Content -->

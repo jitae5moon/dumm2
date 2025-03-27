@@ -50,6 +50,7 @@
       <!-- Buttons -->
       <div class="mt-4">
         <a th:href="@{/articles}" class="btn btn-secondary">Back to List</a>
+        <a th:href="@{/articles/save(parentId=${article.id}, depth=${article.depth})}" class="btn btn-outline-primary">Reply</a>
       </div>
     </div>
   </div>

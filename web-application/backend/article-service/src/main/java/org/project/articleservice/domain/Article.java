@@ -25,12 +25,24 @@ public class Article extends AuditingEntity {
     private String content;
 
     @Setter
+    @JoinColumn(name = "parent_id")
+    @ManyToOne
+    private Article parent;
+
+    @Setter
+    @OneToMany(mappedBy = "parent")
+    private List<Article> children = new ArrayList<>();
+
+    @Setter
     @OneToMany(mappedBy = "article")
     private List<Attachment> attachments = new ArrayList<>();
 
     @Setter
     @OneToMany(mappedBy = "article")
     private List<Comment> comments = new ArrayList<>();
+
+    @Setter
+    private Integer depth;
 
     public void addAttachment(Attachment attachment) {
         this.attachments.add(attachment);
@@ -39,12 +51,15 @@ public class Article extends AuditingEntity {
     protected Article() {}
 
     @Builder
-    public Article(Long id, String title, String content, List<Attachment> attachments, List<Comment> comments) {
+    public Article(Long id, String title, String content, Article parent, List<Article> children, List<Attachment> attachments, List<Comment> comments, int depth) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.parent = parent;
+        this.children = children;
         this.attachments = attachments;
         this.comments = comments;
+        this.depth = depth;
     }
 
 }

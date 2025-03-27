@@ -17,4 +17,8 @@ public class ArticleSpecification {
         return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("createdBy"), "%" + keyword + "%"));
     }
 
+    public static Specification<Article> parentIsNull() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("parent"));
+    }
+
 }

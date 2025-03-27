@@ -3,16 +3,20 @@ package org.project.articleservice.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.project.articleservice.domain.Article;
-import org.project.articleservice.dto.*;
+import org.project.articleservice.dto.ArticleResponseDto;
+import org.project.articleservice.dto.ArticleSaveRequestDto;
+import org.project.articleservice.dto.ArticleSearchRequestDto;
+import org.project.articleservice.dto.ArticleUpdateRequestDto;
 import org.project.articleservice.repository.ArticleRepository;
 import org.project.articleservice.repository.specification.ArticleSpecification;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional
@@ -26,25 +30,35 @@ public class ArticleServiceImpl implements ArticleService {
     public Page<ArticleResponseDto> getArticles(ArticleSearchRequestDto searchRequestDto) {
         Pageable pageable = PageRequest.of(searchRequestDto.currentPage() - 1, searchRequestDto.pageSize(), Sort.by("createdDate").descending());
 
-        Specification<Article> specification = Specification.where(null);
+        Specification<Article> spec = Specification.where(ArticleSpecification.parentIsNull());
 
         if (searchRequestDto.searchType() != null) {
             switch (searchRequestDto.searchType()) {
                 case "title":
-                    specification = specification.and(ArticleSpecification.likeTitle(searchRequestDto.searchWord().trim()));
+                    spec = spec.and(ArticleSpecification.likeTitle(searchRequestDto.searchWord().trim()));
                     break;
                 case "content":
-                    specification = specification.and(ArticleSpecification.likeContent(searchRequestDto.searchWord().trim()));
+                    spec = spec.and(ArticleSpecification.likeContent(searchRequestDto.searchWord().trim()));
                     break;
                 case "createdBy":
-                    specification = specification.and(ArticleSpecification.likeCreatedBy(searchRequestDto.searchWord().trim()));
+                    spec = spec.and(ArticleSpecification.likeCreatedBy(searchRequestDto.searchWord().trim()));
                     break;
             }
         }
 
-        Page<Article> articles = articleRepository.findAll(specification, pageable);
+        Page<Article> articles = articleRepository.findAll(spec, pageable);
+        List<Article> result = new ArrayList<>();
 
-        return articles.map(article -> ArticleResponseDto.from(article));
+        for (Article article : articles.getContent()) {
+            result.add(article);
+            for (Article child : article.getChildren()) {
+                result.add(child);
+            }
+        }
+
+        PageImpl<ArticleResponseDto> articleResponseDtos = new PageImpl<>(result.stream().map(ArticleResponseDto::from).collect(Collectors.toList()), pageable, articles.getTotalPages());
+
+        return articleResponseDtos;
     }
 
     @Override
@@ -54,7 +68,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleResponseDto saveArticle(ArticleSaveRequestDto dto) {
-        Article savedArticle = articleRepository.save(dto.toEntity());
+        Article article = dto.toEntity();
+
+        if (dto.getParentId() != null) {
+            Article parentArticle = articleRepository.findById(dto.getParentId()).orElseThrow(() -> new EntityNotFoundException("Parent not found, id = " + dto.getParentId()));
+            article.setParent(parentArticle);
+            article.setDepth(parentArticle.getDepth() + 1);
+        }
+
+        Article savedArticle = articleRepository.save(article);
 
         if (dto.getAttachments() != null) {
             dto.getAttachments().forEach(attachment -> {

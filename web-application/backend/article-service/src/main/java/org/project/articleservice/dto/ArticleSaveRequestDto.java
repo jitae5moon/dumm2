@@ -13,6 +13,7 @@ public class ArticleSaveRequestDto {
 
     private String title;
     private String content;
+    private Long parentId;
     private List<MultipartFile> attachments;
 
     public Article toEntity() {

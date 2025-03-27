@@ -23,8 +23,14 @@ public class ArticleController {
     private final PaginationService paginationService;
 
     @GetMapping("/save")
-    public String getViewForSaveArticle(Model model) {
+    public String getViewForSaveArticle(@RequestParam(required = false) Long parentId,
+                                        @RequestParam(required = false) Integer depth,
+                                        Model model) {
         log.info("ArticleController :: getViewForSaveArticle");
+
+        model.addAttribute("parentId", parentId);
+        model.addAttribute("depth", depth);
+        model.addAttribute("title", "[RE] ".repeat(depth + 1));
 
         return "articles/save";
     }
