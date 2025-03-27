@@ -66,7 +66,7 @@
     </thead>
     <tbody>
     <tr th:each="article, iterStat : ${articles}">
-      <td th:text="${iterStat.count}"></td>
+      <td th:text="${(searchRequestDto.currentPage - 1) * searchRequestDto.pageSize + iterStat.count}"></td>
       <td>
         <a th:href="@{/articles/{id}(id=${article.id})}" th:text="${article.title}"></a>
       </td>
