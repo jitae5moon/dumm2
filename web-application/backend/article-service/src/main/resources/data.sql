@@ -999,4 +999,4 @@ insert into article (id, title, content, created_by, created_date) values (998, 
 insert into article (id, title, content, created_by, created_date) values (999, 'at vulputate vitae nisl aenean lectus', 'Nullam molestie nibh in lectus. Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vel augue. Vestibulum rutrum rutrum neque.', 'Fancie Ogden', '2025-03-04 07:42:51');
 insert into article (id, title, content, created_by, created_date) values (1000, 'id ligula suspendisse ornare', 'Fusce consequat. Nulla nisl.', 'Melisa Barkway', '2024-12-01 22:53:29');
 
-insert into member(email, password, role, username) values('moon@dumm2.com', '{noop}admin5!', 'ADMIN', 'moon');
+insert into user_account (email, password, role, username) values('moon@dumm2.com', '{noop}admin5!', 'ADMIN', 'moon');

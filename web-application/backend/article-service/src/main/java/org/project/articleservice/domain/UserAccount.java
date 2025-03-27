@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Entity
-public class Member {
+public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,10 @@ public class Member {
     @Setter private String email;
     @Setter private String role;
 
-    protected Member() {}
+    protected UserAccount() {}
 
     @Builder
-    public Member(Long id, String username, String password, String email, String role) {
+    public UserAccount(Long id, String username, String password, String email, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
