@@ -92,7 +92,7 @@
         <a class="page-link" th:href="@{/articles(currentPage=${i})}" th:text="${i}"></a>
       </li>
       <li class="page-item" th:classappend="${searchRequestDto.currentPage + 1 > totalPages} ? 'disabled'">
-        <a class="page-link" th:href="@{/articles(page=${searchRequestDto.currentPage + 1})}">Next</a>
+        <a class="page-link" th:href="@{/articles(currentPage=${searchRequestDto.currentPage + 1})}">Next</a>
       </li>
     </ul>
   </nav>
