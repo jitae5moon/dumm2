@@ -7,14 +7,11 @@ import org.project.articleservice.dto.ArticleResponseDto;
 import org.project.articleservice.dto.ArticleSaveRequestDto;
 import org.project.articleservice.dto.ArticleSearchRequestDto;
 import org.project.articleservice.dto.ArticleUpdateRequestDto;
+import org.project.articleservice.repository.mapper.ArticleMapper;
 import org.project.articleservice.repository.ArticleRepository;
-import org.project.articleservice.repository.specification.ArticleSpecification;
-import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,40 +22,18 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final AttachmentService attachmentService;
     private final ArticleRepository articleRepository;
+    private final ArticleMapper articleMapper;
 
     @Override
-    public Page<ArticleResponseDto> getArticles(ArticleSearchRequestDto searchRequestDto) {
-        Pageable pageable = PageRequest.of(searchRequestDto.currentPage() - 1, searchRequestDto.pageSize(), Sort.by("createdDate").descending());
+    public int countArticles(ArticleSearchRequestDto searchRequestDto) {
+        return articleMapper.countArticles(searchRequestDto);
+    }
 
-        Specification<Article> spec = Specification.where(ArticleSpecification.parentIsNull());
+    @Override
+    public List<ArticleResponseDto> getArticles(ArticleSearchRequestDto searchRequestDto) {
+        List<Article> articles = articleMapper.selectArticles(searchRequestDto);
 
-        if (searchRequestDto.searchType() != null) {
-            switch (searchRequestDto.searchType()) {
-                case "title":
-                    spec = spec.and(ArticleSpecification.likeTitle(searchRequestDto.searchWord().trim()));
-                    break;
-                case "content":
-                    spec = spec.and(ArticleSpecification.likeContent(searchRequestDto.searchWord().trim()));
-                    break;
-                case "createdBy":
-                    spec = spec.and(ArticleSpecification.likeCreatedBy(searchRequestDto.searchWord().trim()));
-                    break;
-            }
-        }
-
-        Page<Article> articles = articleRepository.findAll(spec, pageable);
-        List<Article> result = new ArrayList<>();
-
-        for (Article article : articles.getContent()) {
-            result.add(article);
-            for (Article child : article.getChildren()) {
-                result.add(child);
-            }
-        }
-
-        PageImpl<ArticleResponseDto> articleResponseDtos = new PageImpl<>(result.stream().map(ArticleResponseDto::from).collect(Collectors.toList()), pageable, articles.getTotalPages());
-
-        return articleResponseDtos;
+        return articles.stream().map(ArticleResponseDto::from).collect(Collectors.toList());
     }
 
     @Override

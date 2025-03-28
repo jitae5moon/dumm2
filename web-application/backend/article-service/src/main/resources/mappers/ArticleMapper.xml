@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.project.articleservice.repository.mapper.ArticleMapper">
+    <select id="countArticles" parameterType="org.project.articleservice.dto.ArticleSearchRequestDto">
+        SELECT COUNT(*)
+        FROM article
+        <include refid="selectArticlesWhere"></include>
+    </select>
+
+    <select id="selectArticles" parameterType="org.project.articleservice.dto.ArticleSearchRequestDto" resultType="org.project.articleservice.domain.Article">
+        WITH RECURSIVE CTE AS (
+        SELECT
+        id,
+        title,
+        content,
+        parent_id,
+        created_date,
+        created_by,
+        depth,
+        CAST(id AS CHAR(255)) AS path,
+        created_date AS parent_created_date
+        FROM article
+        WHERE parent_id IS NULL
+        UNION ALL
+        SELECT
+        a.id,
+        a.title,
+        a.content,
+        a.parent_id,
+        a.created_date,
+        a.created_by,
+        a.depth,
+        CONCAT(cte.path, '-', a.id) AS path,
+        cte.parent_created_date
+        FROM article a
+        INNER JOIN CTE cte ON a.parent_id = cte.id
+        )
+        SELECT
+        id,
+        title,
+        content,
+        parent_id,
+        created_date,
+        created_by,
+        depth
+        FROM CTE
+        <include refid="selectArticlesWhere"></include>
+        ORDER BY parent_created_date DESC, path ASC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+    
+    <sql id="selectArticlesWhere">
+        <where>
+            <if test="searchType != null and searchWord != null">
+                <if test="searchType == 'all'">
+                    OR title LIKE CONCAT('%', #{searchWord}, '%')
+                    OR content LIKE CONCAT('%', #{searchWord}, '%')
+                    OR created_by LIKE CONCAT('%', #{searchWord}, '%')
+                </if>
+                <if test="searchType == 'title'">
+                    AND title LIKE CONCAT('%', #{searchWord}, '%')
+                </if>
+                <if test="searchType == 'content'">
+                    AND content LIKE CONCAT('%', #{searchWord}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+</mapper>

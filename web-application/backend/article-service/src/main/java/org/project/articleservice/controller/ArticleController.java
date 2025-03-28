@@ -2,10 +2,12 @@ package org.project.articleservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.articleservice.dto.*;
+import org.project.articleservice.dto.ArticleResponseDto;
+import org.project.articleservice.dto.ArticleSaveRequestDto;
+import org.project.articleservice.dto.ArticleSearchRequestDto;
+import org.project.articleservice.dto.ArticleUpdateRequestDto;
 import org.project.articleservice.service.ArticleService;
 import org.project.articleservice.service.PaginationService;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,12 +41,13 @@ public class ArticleController {
     @GetMapping
     public String getArticles(ArticleSearchRequestDto searchRequestDto, Model model) {
         log.info("ArticleController :: getArticles ");
-        Page<ArticleResponseDto> articles = articleService.getArticles(searchRequestDto);
-        List<Integer> paginationBarNumbers = paginationService.getPaginationBarNumbers(searchRequestDto.currentPage(), articles.getTotalPages());
+        List<ArticleResponseDto> articles = articleService.getArticles(searchRequestDto);
+        int totalPages = articleService.countArticles(searchRequestDto);
+        List<Integer> paginationBarNumbers = paginationService.getPaginationBarNumbers(searchRequestDto.currentPage(), totalPages);
 
-        model.addAttribute("articles", articles.getContent());
+        model.addAttribute("articles", articles);
         model.addAttribute("searchRequestDto", searchRequestDto);
-        model.addAttribute("totalPages", articles.getTotalPages());
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("paginationBarNumbers", paginationBarNumbers);
 
         return "articles/list";
