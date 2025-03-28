@@ -14,7 +14,7 @@ public class PaginationService {
     public List<Integer> getPaginationBarNumbers(int currentPage, int totalPages) {
         int endPage = (int) (Math.ceil((double) currentPage / BAR_SIZE) * BAR_SIZE);
         if (endPage > totalPages) endPage = totalPages;
-        int startPage = endPage - BAR_SIZE + 1;
+        int startPage = Math.max(endPage - BAR_SIZE + 1, 1);
 
         return IntStream.range(startPage, endPage + 1).boxed().collect(Collectors.toList());
     }

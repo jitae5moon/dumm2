@@ -29,6 +29,13 @@ class PaginationServiceTest {
         assertThat(paginationBarNumbers).isEqualTo(result);
     }
 
+    @MethodSource
+    @ParameterizedTest
+    public void testWithOnePage(int currentPage, int totalPages, List<Integer> result) {
+        List<Integer> paginationBarNumbers = sut.getPaginationBarNumbers(currentPage, totalPages);
+        assertThat(paginationBarNumbers).isEqualTo(result);
+    }
+
     private static Stream<Arguments> testCalculatingPaginationBarNumbers() {
         return Stream.of(
                 Arguments.of(1, 10, List.of(1, 2, 3, 4, 5)),
@@ -43,4 +50,11 @@ class PaginationServiceTest {
                 Arguments.of(10, 10, List.of(6, 7, 8, 9, 10))
         );
     }
+
+    private static Stream<Arguments> testWithOnePage() {
+        return Stream.of(
+                Arguments.of(1, 1, List.of(1))
+        );
+    }
+
 }
